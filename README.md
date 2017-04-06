@@ -92,6 +92,13 @@ AND DL_ATT.BEHAVIOR != 'No Attendance Taken'
 AND DL_ATT.STUDENTSCHOOLID != 10075
 AND PS_ATT.YEARID = 26 
 
+-----------Data in DL Raw Attendance Table?
+select *
+from custom.custom_DLAttendance_raw
+where 
+BehaviorDate = dateadd(day,datediff(day,1,GETDATE()),0)
+AND BehaviorCategory = 'Daily Attendance'
+
 ```
 
 
