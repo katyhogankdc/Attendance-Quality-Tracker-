@@ -91,6 +91,7 @@ AND DL_ATT.BEHAVIOR != 'Present'
 AND DL_ATT.BEHAVIOR != 'No Attendance Taken'
 AND DL_ATT.STUDENTSCHOOLID != 10075
 AND PS_ATT.YEARID = 26 
+AND PS_ATT.ENROLL_STATUS = 1
 
 -----------Data in DL Raw Attendance Table?
 select *
