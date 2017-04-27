@@ -90,8 +90,9 @@ AND PS_ATT.ATT_CODE IS NULL
 AND DL_ATT.BEHAVIOR != 'Present'
 AND DL_ATT.BEHAVIOR != 'No Attendance Taken'
 AND DL_ATT.STUDENTSCHOOLID != 10075
-AND PS_ATT.YEARID = 26 
+--AND PS_ATT.YEARID = 26 
 AND PS_ATT.ENROLL_STATUS = 1
+AND DL_ATT.BEHAVIORDATE > '2016-08-08'
 
 -----------Data in DL Raw Attendance Table?
 select *
@@ -113,6 +114,39 @@ JOIN POWERSCHOOL.POWERSCHOOL_ATTENDANCE_CODE AC ON AC.SCHOOLID = A.SCHOOLID
 WHERE ATT_DATE = dateadd(day,datediff(day,1,GETDATE()),0)
 AND A.YEARID = 26
 AND AC.PRESENCE_STATUS_CD = 'Present' 
+
+
+------Number of Present Records
+SELECT 
+
+  s.student_number AS StudentNumber
+, s.id AS PSID
+, s.lastfirst AS FullName
+, sc.abbreviation AS SchoolName
+, dsc.schoolyear4digit AS SchoolYear4Digit
+, cd.date_value AS FullDate
+, cd.membershipvalue AS Membership
+, cd.insession AS InSession
+, COALESCE(ac.att_code,'P') AttendanceCode
+, COALESCE(ac.description,'Present') AttendanceDescription
+, COALESCE(ac.presence_status_cd,'Present') PresentStatus
+,s.entrydate as entrydate
+,s.exitdate as exitdate
+
+FROM [powerschool].[powerschool_students] s
+INNER JOIN [powerschool].[PowerSchool_CALENDAR_DAY] cd ON (cd.date_value BETWEEN s.entrydate AND s.exitdate-1) AND s.schoolid = cd.schoolid
+LEFT JOIN [powerschool].[PowerSchool_ATTENDANCE] att ON (att.studentid = s.id AND att.att_date = cd.date_value AND att.att_mode_code = 'ATT_ModeDaily')
+LEFT JOIN [powerschool].[PowerSchool_ATTENDANCE_CODE] ac ON ac.id = att.attendance_codeid
+INNER JOIN [powerschool].[PowerSchool_SCHOOLS] sc ON sc.school_number = s.schoolid
+INNER JOIN [custom].[custom_StudentBridge] sb ON sb.student_number = s.student_number
+INNER JOIN [custom].[custom_Students] cs ON cs.systemstudentid = sb.systemstudentid
+INNER JOIN [dw].[DW_dimSchoolCalendar] dsc ON (dsc.systemschoolid = CONVERT(varchar,s.schoolid)  AND dsc.fulldate = cd.date_value)
+
+
+WHERE 1=1
+AND cd.insession = 1
+AND cd.date_value = dateadd(day,datediff(day,1,GETDATE()),0)
+AND ac.presence_status_cd = 'Present'
 
 ```
 
