@@ -2,6 +2,28 @@
 Queries for attendance quality tracker 
 
 ```
+
+--------------------QUERYING FOR ATTENDANCE CODES - oracle
+select 
+ac.att_code
+,ac.id
+,ac.description
+,ac.presence_status_cd
+,ce.external_name
+from attendance_code ac
+join att_code_code_entity acce on ac.id = acce.attendance_codeid
+join 
+  (select id
+   ,external_name
+   from code_entity
+   where external_name in ('Excused','Unexcused')
+   ) ce on acce.code_entityID = ce.id
+
+where 1=1 
+and ac.schoolid = 1000
+and ac.yearid = 28
+
+
 -----------------------MISMATCH BETWEEN DL AND PS ATTENDANCE CODES
 
 SELECT
